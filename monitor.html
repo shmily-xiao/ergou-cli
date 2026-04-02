@@ -393,91 +393,41 @@
         // 加载数据
         async function loadData() {
             try {
-                // 在实际应用中，这里会 fetch JSON 文件
-                // 由于是本地文件，我们使用模拟数据
-                const data = getMockData();
+                // 添加缓存 busting 参数强制刷新
+                const timestamp = new Date().getTime();
+                const response = await fetch(`${CONFIG.dataFile}?t=${timestamp}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
                 renderDashboard(data);
                 updateLastUpdate();
-                addLog('SYSTEM', 'INFO', '数据刷新成功');
+                addLog('SYSTEM', 'INFO', `数据刷新成功 - ${formatTime(new Date())}`);
+                
+                // 如果有新日志，更新日志显示
+                if (data.logs) {
+                    renderLogs(data.logs);
+                }
             } catch (error) {
                 console.error('加载数据失败:', error);
                 addLog('SYSTEM', 'ERROR', `加载数据失败：${error.message}`);
+                
+                // 如果 fetch 失败，显示错误提示
+                const container = document.getElementById('agentList');
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <strong>数据加载失败</strong><br>
+                        原因：${error.message}<br><br>
+                        解决方案：<br>
+                        1. 使用 HTTP 服务器打开（推荐）：<br>
+                           <code>cd /Users/shmily/workspace/ergou-cli && python3 -m http.server 8080</code><br>
+                        2. 或者部署到 GitHub Pages<br>
+                        3. 或者禁用浏览器 CORS 限制（不推荐）
+                    </div>
+                `;
             }
-        }
-
-        // 模拟数据（实际应用中会从文件读取）
-        function getMockData() {
-            return {
-                lastUpdate: new Date().toISOString(),
-                agents: {
-                    'ai-engineer': {
-                        status: 'working',
-                        currentTask: '001',
-                        taskName: 'Anthropic Provider 实现',
-                        model: 'qwen3-coder-plus',
-                        progress: 35,
-                        startTime: new Date().toISOString()
-                    },
-                    'senior-developer': {
-                        status: 'idle',
-                        currentTask: null,
-                        taskName: null,
-                        model: 'qwen3-coder-plus',
-                        progress: null,
-                        startTime: null
-                    },
-                    'backend-architect': {
-                        status: 'idle',
-                        currentTask: null,
-                        taskName: null,
-                        model: 'qwen3-coder-plus',
-                        progress: null,
-                        startTime: null
-                    },
-                    'test-results-analyzer': {
-                        status: 'idle',
-                        currentTask: null,
-                        taskName: null,
-                        model: 'qwen3.5-plus',
-                        progress: null,
-                        startTime: null
-                    },
-                    'content-creator': {
-                        status: 'idle',
-                        currentTask: null,
-                        taskName: null,
-                        model: 'qwen3.5-plus',
-                        progress: null,
-                        startTime: null
-                    }
-                },
-                taskQueue: {
-                    working: [
-                        { id: '001', name: 'Anthropic Provider 实现', agent: 'ai-engineer', progress: 35, priority: 'P0' }
-                    ],
-                    pending: [
-                        { id: '002', name: 'DeepSeek Provider 实现', agent: 'ai-engineer', priority: 'P1' },
-                        { id: '003', name: 'OpenAI Provider 实现', agent: 'ai-engineer', priority: 'P1' },
-                        { id: '004', name: 'CLI 入口实现', agent: 'senior-developer', priority: 'P0' },
-                        { id: '005', name: '工具系统实现', agent: 'backend-architect', priority: 'P1' }
-                    ],
-                    completed: [],
-                    failed: []
-                },
-                statistics: {
-                    today: {
-                        totalTasks: 1,
-                        working: 1,
-                        completed: 0,
-                        failed: 0
-                    }
-                },
-                logs: [
-                    { time: '21:10:00', level: 'INFO', agent: 'SYSTEM', message: '监控系统启动' },
-                    { time: '21:10:00', level: 'START', agent: 'ai-engineer', message: '开始执行任务 001' },
-                    { time: '21:10:30', level: 'PROGRESS', agent: 'ai-engineer', message: '进度：35%' }
-                ]
-            };
         }
 
         // 渲染仪表盘
