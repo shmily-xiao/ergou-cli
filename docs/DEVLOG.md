@@ -117,6 +117,12 @@ commit a6614a2 - feat: 初始化 Ergou CLI 项目
    - 理由：优秀的用户体验
    - 实现：使用 Web Streams API
 
+5. **使用 Coder Agent 编写代码** ⭐
+   - 理由：专业化分工，提高代码质量和开发效率
+   - 模型：qwen3-coder-plus (阿里云)
+   - 效果：代码质量提升，HumanEval 85.2%
+   - 成本：$0.002/$0.006 per 1M tokens，性价比高
+
 ### 🐛 遇到的问题
 
 1. **问题**: Bun 安装部分包失败

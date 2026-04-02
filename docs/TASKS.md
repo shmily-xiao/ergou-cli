@@ -325,6 +325,50 @@
 | 🚫 Blocked | 0 | 0% |
 | **总计** | **60** | **100%** |
 
+## 🤖 Agent 委托策略
+
+### 开发模式
+
+```
+用户 (shmily)
+  ↓ 委托任务
+Coder Agent (qwen3-coder-plus)
+  ↓ 执行
+代码实现
+```
+
+### 任务分配
+
+| 任务类型 | 执行者 | 模型 |
+|---------|--------|------|
+| 项目规划 | shmily | - |
+| 架构设计 | shmily + Agent | - |
+| **代码编写** | **Coder Agent** | **qwen3-coder-plus** |
+| **代码审查** | **Coder Agent** | **qwen3-coder-plus** |
+| **Bug 修复** | **Coder Agent** | **qwen3-coder-plus** |
+| **测试编写** | **Coder Agent** | **qwen3-coder-plus** |
+| 文档编写 | shmily + Agent | qwen3.5-plus |
+| 最终审核 | shmily | - |
+```
+
+### 使用方式
+
+```bash
+# 委托代码任务给 Coder Agent
+ergou skill use coder-agent "实现 Anthropic Provider"
+
+# 或者
+/openclaw skill use ergou-coder-agent "实现 DeepSeek Provider"
+```
+
+### 工作流程
+
+1. **shmily** 定义任务和需求
+2. **Coder Agent** (qwen3-coder-plus) 实现代码
+3. **shmily** 审查和测试
+4. **Coder Agent** 修复和改进
+5. **shmily** 最终审核和提交
+
 ## 🎯 里程碑
 
 | 里程碑 | 目标日期 | 状态 |
