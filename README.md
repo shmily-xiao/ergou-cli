@@ -137,7 +137,8 @@ ergou /switch
 ## 📊 支持的模型
 
 ### 阿里云 (DashScope) ✅
-- `qwen3.5-plus` - 最强代码能力，256K 上下文
+- `qwen3-coder-plus` - 代码专用模型，推荐用于编程任务 ⭐
+- `qwen3.5-plus` - 通用模型，256K 上下文
 - `qwen-plus` - 平衡性能，131K 上下文
 - `qwen-max` - 高精度任务
 

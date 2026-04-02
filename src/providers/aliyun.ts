@@ -21,7 +21,7 @@ export class AliyunProvider extends BaseModelProvider {
   private baseUrl: string;
 
   constructor(config: ProviderConfig) {
-    super('aliyun', 'qwen3.5-plus', config);
+    super('aliyun', 'qwen3-coder-plus', config);
     
     this.apiKey = config.apiKey || process.env.DASHSCOPE_API_KEY || '';
     this.baseUrl = config.baseUrl || AliyunProvider.DEFAULT_BASE_URL;
@@ -35,6 +35,29 @@ export class AliyunProvider extends BaseModelProvider {
 
   async listModels(): Promise<ModelInfo[]> {
     const models: ModelInfo[] = [
+      {
+        id: 'qwen3-coder-plus',
+        displayName: 'Qwen3 Coder Plus',
+        provider: this.name,
+        contextWindow: 256000,
+        maxOutputTokens: 65536,
+        supportsVision: false,
+        supportsFunctionCall: true,
+        supportsStreaming: true,
+        knowledgeCutoff: '2026-01',
+        pricing: {
+          inputPerMillion: 0.002,
+          outputPerMillion: 0.006,
+          cacheReadPerMillion: 0.0002,
+        },
+        capabilities: {
+          codeGeneration: true,
+          codeAnalysis: true,
+          mathematicalReasoning: true,
+          multilingual: true,
+          longContext: true,
+        },
+      },
       {
         id: 'qwen3.5-plus',
         displayName: 'Qwen 3.5 Plus',
