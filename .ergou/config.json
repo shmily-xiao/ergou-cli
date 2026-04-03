@@ -1,0 +1,5 @@
+{
+  "defaultProvider": "aliyun",
+  "defaultModel": "glm-5",
+  "providers": {}
+}

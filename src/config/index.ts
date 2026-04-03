@@ -53,8 +53,8 @@ export interface ErgouConfig {
 }
 
 const defaultConfig: ErgouConfig = {
-  defaultProvider: 'aliyun',
-  defaultModel: 'qwen3.5-plus',
+  defaultProvider: 'zhipu',
+  defaultModel: 'glm-5',
   providers: {},
   ui: {
     theme: 'dark',
@@ -130,6 +130,16 @@ export function setProviderConfig(
  */
 export function loadConfigFromEnv(): ErgouConfig {
   const config: ErgouConfig = { ...defaultConfig };
+  
+  // 智谱 GLM (默认)
+  if (process.env.ZHIPU_API_KEY) {
+    config.providers = {
+      ...config.providers,
+      zhipu: {
+        apiKey: process.env.ZHIPU_API_KEY,
+      },
+    };
+  }
   
   // 阿里云
   if (process.env.DASHSCOPE_API_KEY) {
