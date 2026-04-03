@@ -1,14 +1,12 @@
 /**
  * Tool Registry - 工具注册表
- * 简化版本 - 使用 ergou-cli 原有的简单工具
+ * 实用版本 - 启用核心工具
  */
 
 import type { Tool } from '../types/index.js';
 import { BashTool } from './bash.js';
 import { FileReadTool } from './file-read.js';
 import { FileWriteTool } from './file-write.js';
-// GrepTool 需要从完整版本导入，但它是 buildTool 创建的对象
-// import { GrepTool } from '../tools-full/GrepTool/GrepTool.js';
 
 /**
  * 工具注册表类
@@ -32,8 +30,9 @@ export class ToolRegistry {
     this.register('bash', new BashTool());
     this.register('file_read', new FileReadTool());
     this.register('file_write', new FileWriteTool());
-    this.register('file_edit', new FileWriteTool());
-    // GrepTool 暂时跳过 (需要特殊处理 buildTool)
+    this.register('file_edit', new FileWriteTool()); // 简化版本
+    
+    console.log(`✅ ToolRegistry initialized with ${this.tools.size} tools`);
   }
 
   register(name: string, tool: Tool) {

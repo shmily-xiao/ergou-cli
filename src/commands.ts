@@ -62,9 +62,12 @@ program
     const providerName = options.provider || config.defaultProvider || 'aliyun';
     const providerConfig = config.providers?.[providerName as keyof typeof config.providers];
     
+    // 优先使用环境变量
+    const apiKey = process.env.DASHSCOPE_API_KEY || providerConfig?.apiKey;
+    
     const provider = await registry.createProvider(providerName, {
       name: providerName,
-      apiKey: providerConfig?.apiKey,
+      apiKey,
       baseUrl: providerConfig?.baseUrl,
     });
     
