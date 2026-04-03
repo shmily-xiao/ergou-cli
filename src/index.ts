@@ -1,7 +1,7 @@
 /**
- * Ergou CLI - Library Entry Point (简化版)
+ * Ergou CLI - Library Entry Point (核心模块)
  * 
- * 只导出核心模块，避免复杂依赖
+ * 只导出核心模块，确保 100% 可用
  */
 
 // Export types
