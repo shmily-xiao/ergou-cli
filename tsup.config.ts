@@ -6,7 +6,7 @@ export default defineConfig({
     index: 'src/index.ts',
   },
   format: ['esm'],
-  dts: true,
+  dts: false, // 暂时跳过类型定义生成，让 CLI 先跑起来
   splitting: false,
   sourcemap: true,
   clean: true,
