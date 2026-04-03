@@ -1,7 +1,7 @@
 /**
- * Ergou CLI - Library Entry Point
+ * Ergou CLI - Library Entry Point (简化版)
  * 
- * Universal LLM-powered coding agent
+ * 只导出核心模块，避免复杂依赖
  */
 
 // Export types
@@ -17,5 +17,8 @@ export { OpenAIProvider } from './providers/openai.js';
 // Export tools
 export { toolRegistry, ToolRegistry } from './tools/registry.js';
 
-// Export utilities
+// Export config
+export { loadConfig, saveConfig, getMergedConfig } from './config/index.js';
+
+// Export version
 export { version } from './version.js';
