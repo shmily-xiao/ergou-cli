@@ -363,7 +363,7 @@ export function registerImportantCommands(program: any) {
     .action(async (options) => {
       if (options.list) {
         console.log('项目列表:');
-        console.log('  ergou-cli (当前)');
+        console.log('  ergou-code (当前)');
       } else if (options.create) {
         console.log(`创建项目：${options.create}`);
         console.log('✅ 创建完成');

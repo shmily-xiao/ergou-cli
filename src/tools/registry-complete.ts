@@ -108,7 +108,7 @@ export class ToolRegistry {
     
     console.log('');
     console.log(`✅ 已注册 ${this.tools.size} 个工具 (45/45 100% 完成)`);
-    console.log('🎉 ergou-cli 工具系统与 claude-code-sourcemap 100% 对齐！\n');
+    console.log('🎉 ergou-code 工具系统与 claude-code-sourcemap 100% 对齐！\n');
   }
 
   register(name: string, tool: ToolDefinition) {

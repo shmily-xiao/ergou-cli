@@ -47,7 +47,7 @@ export function registerExtendedCommands(program: any) {
     .description('显示版本号')
     .action(async () => {
       const pkg = await import('../package.json', { assert: { type: 'json' } });
-      console.log(`ergou-cli v${pkg.default.version}`);
+      console.log(`ergou-code v${pkg.default.version}`);
     });
 
   // ========== 初始化命令 ==========
@@ -56,7 +56,7 @@ export function registerExtendedCommands(program: any) {
     .description('初始化项目')
     .option('-y, --yes', '使用默认配置')
     .action(async (options) => {
-      console.log('初始化 ergou-cli 项目...');
+      console.log('初始化 ergou-code 项目...');
       const { mkdir, writeFile } = await import('fs/promises');
       const { join } = await import('path');
       
@@ -118,7 +118,7 @@ export function registerExtendedCommands(program: any) {
     .command('doctor')
     .description('检查系统状态')
     .action(async () => {
-      console.log('🔍 检查 ergou-cli 状态...\n');
+      console.log('🔍 检查 ergou-code 状态...\n');
       
       // 检查 API Key
       const hasApiKey = !!(

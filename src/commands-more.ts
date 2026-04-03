@@ -248,7 +248,7 @@ export function registerMoreCommands(program: any) {
   // ========== 更新命令 ==========
   program
     .command('update')
-    .description('更新 ergou-cli')
+    .description('更新 ergou-code')
     .option('-c, --check', '检查更新')
     .option('-u, --upgrade', '执行升级')
     .action(async (options) => {
@@ -268,15 +268,15 @@ export function registerMoreCommands(program: any) {
   // ========== 卸载命令 ==========
   program
     .command('uninstall')
-    .description('卸载 ergou-cli')
+    .description('卸载 ergou-code')
     .option('-y, --yes', '确认卸载')
     .action(async (options) => {
       if (options.yes) {
-        console.log('卸载 ergou-cli...');
+        console.log('卸载 ergou-code...');
         // 实现卸载逻辑
         console.log('✅ 卸载完成');
       } else {
-        console.log('⚠️  确定要卸载 ergou-cli 吗？使用 -y 确认');
+        console.log('⚠️  确定要卸载 ergou-code 吗？使用 -y 确认');
       }
     });
 
@@ -285,7 +285,7 @@ export function registerMoreCommands(program: any) {
     .command('info')
     .description('系统信息')
     .action(async () => {
-      console.log('ergou-cli 信息:');
+      console.log('ergou-code 信息:');
       console.log(`  版本：v0.1.0`);
       console.log(`  Node: ${process.version}`);
       console.log(`  平台：${process.platform} ${process.arch}`);

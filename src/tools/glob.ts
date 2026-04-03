@@ -3,7 +3,7 @@
  * 基于 claude-code-sourcemap 的 GlobTool 实现
  */
 
-import { glob as fastGlob } from 'fast-glob';
+import * as fastGlob from 'fast-glob';
 
 export class GlobTool {
   async execute(params: Record<string, unknown>): Promise<any> {
