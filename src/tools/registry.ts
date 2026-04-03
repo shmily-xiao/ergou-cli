@@ -7,7 +7,7 @@ import type { Tool } from '../types/index.js';
 import { BashTool } from './bash.js';
 import { FileReadTool } from './file-read.js';
 import { FileWriteTool } from './file-write.js';
-import { GrepTool } from './grep.js';
+import { GrepTool } from '../tools-full/GrepTool/GrepTool.js';
 
 /**
  * 工具注册表类
