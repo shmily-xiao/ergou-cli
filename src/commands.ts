@@ -39,6 +39,12 @@ program
   .option('-t, --tools', '启用工具系统', false)
   .option('--non-interactive', '非交互模式')
   .action(async (message, options) => {
+    // 先导入所有 Provider 以触发注册
+    await import('./providers/aliyun.js');
+    await import('./providers/anthropic.js');
+    await import('./providers/deepseek.js');
+    await import('./providers/openai.js');
+    
     // 加载配置
     const config = await getMergedConfig();
     
@@ -160,7 +166,13 @@ program
   .description('列出可用模型')
   .option('-p, --provider <provider>', '指定 Provider')
   .action(async (options) => {
-    const { ProviderRegistry } = await import('./providers/base.js');
+    // 先导入所有 Provider 以触发注册
+    await import('./providers/aliyun.js');
+    await import('./providers/anthropic.js');
+    await import('./providers/deepseek.js');
+    await import('./providers/openai.js');
+    
+    const { ProviderRegistry, getAvailableProviders } = await import('./providers/base.js');
     const registry = ProviderRegistry.getInstance();
     
     const providerName = options.provider || 'aliyun';
@@ -200,6 +212,12 @@ program
   .alias('p')
   .description('列出可用 Provider')
   .action(async () => {
+    // 先导入所有 Provider 以触发注册
+    await import('./providers/aliyun.js');
+    await import('./providers/anthropic.js');
+    await import('./providers/deepseek.js');
+    await import('./providers/openai.js');
+    
     const { ProviderRegistry } = await import('./providers/base.js');
     const registry = ProviderRegistry.getInstance();
     const providers = registry.listProviders();
