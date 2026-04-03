@@ -10,7 +10,8 @@ import { BashTool } from './tools-full/BashTool/BashTool.js';
 import { FileReadTool } from './tools-full/FileReadTool/FileReadTool.js';
 import { FileWriteTool } from './tools-full/FileWriteTool/FileWriteTool.js';
 import { FileEditTool } from './tools-full/FileEditTool/FileEditTool.js';
-import { GrepTool } from './tools-full/GrepTool/GrepTool.js';
+// GrepTool 使用特殊处理，暂时跳过
+// import { GrepTool } from './tools-full/GrepTool/GrepTool.js';
 import { GlobTool } from './tools-full/GlobTool/GlobTool.js';
 import { MCPTool } from './tools-full/MCPTool/MCPTool.js';
 import { ListMcpResourcesTool } from './tools-full/ListMcpResourcesTool/ListMcpResourcesTool.js';
@@ -160,3 +161,4 @@ export class ToolRegistry {
 }
 
 export const toolRegistry = ToolRegistry.getInstance();
+nstance();

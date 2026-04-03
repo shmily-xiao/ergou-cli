@@ -7,7 +7,8 @@ import type { Tool } from '../types/index.js';
 import { BashTool } from './bash.js';
 import { FileReadTool } from './file-read.js';
 import { FileWriteTool } from './file-write.js';
-import { GrepTool } from '../tools-full/GrepTool/GrepTool.js';
+// GrepTool 需要从完整版本导入，但它是 buildTool 创建的对象
+// import { GrepTool } from '../tools-full/GrepTool/GrepTool.js';
 
 /**
  * 工具注册表类
@@ -32,7 +33,7 @@ export class ToolRegistry {
     this.register('file_read', new FileReadTool());
     this.register('file_write', new FileWriteTool());
     this.register('file_edit', new FileWriteTool());
-    this.register('grep', new GrepTool());
+    // GrepTool 暂时跳过 (需要特殊处理 buildTool)
   }
 
   register(name: string, tool: Tool) {
