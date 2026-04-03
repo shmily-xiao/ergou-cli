@@ -7,6 +7,7 @@ import type { Tool } from '../types/index.js';
 import { BashTool } from './bash.js';
 import { FileReadTool } from './file-read.js';
 import { FileWriteTool } from './file-write.js';
+import { GrepTool } from './grep.js';
 
 /**
  * 工具注册表类
@@ -31,6 +32,7 @@ export class ToolRegistry {
     this.register('file_read', new FileReadTool());
     this.register('file_write', new FileWriteTool());
     this.register('file_edit', new FileWriteTool());
+    this.register('grep', new GrepTool());
   }
 
   register(name: string, tool: Tool) {
