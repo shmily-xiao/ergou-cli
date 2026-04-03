@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: {
-    cli: 'src/cli.ts',
+    cli: 'src/commands.ts',  // 使用新的命令系统
     index: 'src/index.ts',
   },
   format: ['esm'],
