@@ -13,6 +13,7 @@ export { AliyunProvider } from './providers/aliyun.js';
 export { AnthropicProvider } from './providers/anthropic.js';
 export { DeepSeekProvider } from './providers/deepseek.js';
 export { OpenAIProvider } from './providers/openai.js';
+export { ZhipuProvider } from './providers/zhipu.js';
 
 // Export tools
 export { toolRegistry, ToolRegistry } from './tools/registry.js';

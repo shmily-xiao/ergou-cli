@@ -36,6 +36,28 @@ export class AliyunProvider extends BaseModelProvider {
   async listModels(): Promise<ModelInfo[]> {
     const models: ModelInfo[] = [
       {
+        id: 'glm-5',
+        displayName: 'GLM-5 (智谱)',
+        provider: this.name,
+        contextWindow: 128000,
+        maxOutputTokens: 32768,
+        supportsVision: true,
+        supportsFunctionCall: true,
+        supportsStreaming: true,
+        knowledgeCutoff: '2026-01',
+        pricing: {
+          inputPerMillion: 0.005,
+          outputPerMillion: 0.02,
+        },
+        capabilities: {
+          codeGeneration: true,
+          codeAnalysis: true,
+          mathematicalReasoning: true,
+          multilingual: true,
+          longContext: true,
+        },
+      },
+      {
         id: 'qwen3-coder-plus',
         displayName: 'Qwen3 Coder Plus',
         provider: this.name,

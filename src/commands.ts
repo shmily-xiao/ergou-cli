@@ -40,6 +40,7 @@ program
   .option('--non-interactive', '非交互模式')
   .action(async (message, options) => {
     // 先导入所有 Provider 以触发注册
+    await import('./providers/zhipu.js'); // 首先导入智谱 (默认)
     await import('./providers/aliyun.js');
     await import('./providers/anthropic.js');
     await import('./providers/deepseek.js');
@@ -48,28 +49,85 @@ program
     // 加载配置
     const config = await getMergedConfig();
     
-    console.log('🤖 Ergou CLI - 开始对话');
-    console.log(`模型：${options.model || config.defaultModel || 'auto'}`);
-    console.log(`Provider: ${options.provider || config.defaultProvider || 'auto'}`);
-    console.log(`工具系统：${options.tools ? '✅ 已启用' : '❌ 未启用'}`);
-    console.log('');
+    // 默认使用智谱 GLM-5
+    const defaultProvider = 'zhipu';
+    const defaultModel = 'glm-5';
+    
+    // 先导入所有 Provider 以触发注册
+    await import('./providers/zhipu.js'); // 首先导入智谱 (默认)
+    await import('./providers/aliyun.js');
+    await import('./providers/anthropic.js');
+    await import('./providers/deepseek.js');
+    await import('./providers/openai.js');
     
     // 导入 Provider 系统
     const { ProviderRegistry } = await import('./providers/base.js');
     const registry = ProviderRegistry.getInstance();
     
-    // 创建 Provider (使用配置中的 API Key)
-    const providerName = options.provider || config.defaultProvider || 'aliyun';
+    // 优先使用环境变量确定 Provider
+    let providerName = 'aliyun'; // 默认阿里云
+    let apiKey = process.env.DASHSCOPE_API_KEY;
+    
+    // 如果用户指定了 Provider，使用用户指定的
+    if (options.provider) {
+      providerName = options.provider;
+      apiKey = undefined;
+    }
+    // 否则使用环境变量（如果设置了）
+    else if (process.env.DASHSCOPE_API_KEY) {
+      providerName = 'aliyun';
+      apiKey = process.env.DASHSCOPE_API_KEY;
+    }
+    else if (process.env.ZHIPU_API_KEY) {
+      providerName = 'zhipu';
+      apiKey = process.env.ZHIPU_API_KEY;
+    }
+    // 最后使用配置文件
+    else if (config.defaultProvider) {
+      providerName = config.defaultProvider;
+      apiKey = config.providers?.[providerName as keyof typeof config.providers]?.apiKey;
+    }
+    console.log('🤖 Ergou CLI - 开始对话');
+    console.log(`模型：${options.model || config.defaultModel || defaultModel}`);
+    console.log(`Provider: ${providerName}`);
+    console.log(`工具系统：${options.tools ? '✅ 已启用' : '❌ 未启用'}`);
+    console.log('');
+    
+    // 如果用户指定了 Provider
+    if (options.provider) {
+      providerName = options.provider;
+      apiKey = undefined;
+    } else if (config.defaultProvider) {
+      providerName = config.defaultProvider;
+      apiKey = config.providers?.[providerName as keyof typeof config.providers]?.apiKey;
+    }
+    
+    // 根据 Provider 选择对应的环境变量
+    if (providerName === 'aliyun' || providerName === 'qwen') {
+      apiKey = process.env.DASHSCOPE_API_KEY || apiKey;
+    } else if (providerName === 'zhipu' || providerName === 'glm') {
+      apiKey = process.env.ZHIPU_API_KEY || apiKey;
+    } else if (providerName === 'anthropic' || providerName === 'claude') {
+      apiKey = process.env.ANTHROPIC_API_KEY || apiKey;
+    } else if (providerName === 'deepseek') {
+      apiKey = process.env.DEEPSEEK_API_KEY || apiKey;
+    } else if (providerName === 'openai' || providerName === 'gpt') {
+      apiKey = process.env.OPENAI_API_KEY || apiKey;
+    }
+    
     const providerConfig = config.providers?.[providerName as keyof typeof config.providers];
     
-    // 优先使用环境变量
-    const apiKey = process.env.DASHSCOPE_API_KEY || providerConfig?.apiKey;
+    console.log('[DEBUG] Creating provider:', providerName);
+    console.log('[DEBUG] API Key:', apiKey ? 'set' : 'not set');
+    console.log('[DEBUG] Available providers:', registry.listProviders());
     
     const provider = await registry.createProvider(providerName, {
       name: providerName,
       apiKey,
       baseUrl: providerConfig?.baseUrl,
     });
+    
+    console.log('[DEBUG] Created provider:', provider.constructor.name);
     
     const models = await provider.listModels();
     const selectedModel = options.model || provider.defaultModel;
@@ -345,8 +403,8 @@ program
     
     // 检查配置
     console.log('配置状态:');
-    console.log(`  默认 Provider: ${config.defaultProvider}`);
-    console.log(`  默认模型：${config.defaultModel}`);
+    console.log(`  默认 Provider: ${config.defaultProvider || 'zhipu'}`);
+    console.log(`  默认模型：${config.defaultModel || 'glm-5'}`);
     console.log('');
     
     // 检查 API Keys
@@ -354,29 +412,41 @@ program
       config.providers?.aliyun?.apiKey ||
       config.providers?.anthropic?.apiKey ||
       config.providers?.deepseek?.apiKey ||
-      config.providers?.openai?.apiKey
+      config.providers?.openai?.apiKey ||
+      config.providers?.zhipu?.apiKey ||
+      process.env.DASHSCOPE_API_KEY ||
+      process.env.ANTHROPIC_API_KEY ||
+      process.env.DEEPSEEK_API_KEY ||
+      process.env.OPENAI_API_KEY ||
+      process.env.ZHIPU_API_KEY
     );
     
     console.log('API Keys:');
-    if (config.providers?.aliyun?.apiKey) {
+    if (config.providers?.aliyun?.apiKey || process.env.DASHSCOPE_API_KEY) {
       console.log(`  ✅ 阿里云：已配置`);
     } else {
       console.log(`  ❌ 阿里云：未配置`);
     }
     
-    if (config.providers?.anthropic?.apiKey) {
+    if (config.providers?.zhipu?.apiKey || process.env.ZHIPU_API_KEY) {
+      console.log(`  ✅ 智谱 GLM：已配置 ⭐`);
+    } else {
+      console.log(`  ❌ 智谱 GLM：未配置`);
+    }
+    
+    if (config.providers?.anthropic?.apiKey || process.env.ANTHROPIC_API_KEY) {
       console.log(`  ✅ Anthropic：已配置`);
     } else {
       console.log(`  ❌ Anthropic：未配置`);
     }
     
-    if (config.providers?.deepseek?.apiKey) {
+    if (config.providers?.deepseek?.apiKey || process.env.DEEPSEEK_API_KEY) {
       console.log(`  ✅ DeepSeek：已配置`);
     } else {
       console.log(`  ❌ DeepSeek：未配置`);
     }
     
-    if (config.providers?.openai?.apiKey) {
+    if (config.providers?.openai?.apiKey || process.env.OPENAI_API_KEY) {
       console.log(`  ✅ OpenAI：已配置`);
     } else {
       console.log(`  ❌ OpenAI：未配置`);
@@ -388,14 +458,16 @@ program
       console.log('✅ 状态正常，可以开始使用！');
       console.log('');
       console.log('快速开始:');
-      console.log('  ergou chat                    # 开始对话');
+      console.log('  ergou chat                    # 开始对话 (默认 GLM-5)');
       console.log('  ergou chat "写个快速排序"      # 单条消息');
+      console.log('  ergou chat -p aliyun          # 使用阿里云');
     } else {
       console.log('⚠️  未配置任何 API Key');
       console.log('');
       console.log('配置方法:');
       console.log('  1. 环境变量 (推荐用于测试):');
-      console.log('     export DASHSCOPE_API_KEY=your-key');
+      console.log('     export ZHIPU_API_KEY=sk-xxx  # 智谱 GLM (默认)');
+      console.log('     export DASHSCOPE_API_KEY=xxx # 阿里云');
       console.log('');
       console.log('  2. 配置文件 (推荐用于生产):');
       console.log('     编辑 ~/.ergou/config.json');
