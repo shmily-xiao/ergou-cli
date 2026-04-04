@@ -1,292 +1,267 @@
-# Ergou CLI (饿狗 CLI)
+# Ergou Code
 
-[![npm version](https://img.shields.io/npm/v/ergou-cli.svg)](https://www.npmjs.com/package/ergou-cli)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/shmily-xiao/ergou-cli)](https://github.com/shmily-xiao/ergou-cli)
+> Claude Code 的一个 Fork。不是官方正史，而是平行世界番外篇；不是萌豚整活仓库，而是“认真修、顺手发癫一点点”的工程分支。
 
-**🤖 通用大模型终端 Agent 工具** - 基于 Claude Code restored-src 代码重构，支持多厂商大模型
+[![Fork](https://img.shields.io/badge/Fork-Claude%20Code-f59e0b)](README.md)
+[![Status](https://img.shields.io/badge/status-restored%20%2B%20modded-10b981)](README.md)
+[![Runtime](https://img.shields.io/badge/runtime-Bun%20%2B%20Node-3b82f6)](README.md)
+[![Config](https://img.shields.io/badge/config-~%2F.ergou-8b5cf6)](README.md)
+[![License](https://img.shields.io/badge/license-see%20upstream%20notice-lightgrey)](README.md)
+[![Issues](https://img.shields.io/badge/issues-welcome-ef4444)](README.md)
 
-> **项目愿景**: 实现 Claude Code 的全部 Agent 能力，支持阿里云 Qwen、Anthropic Claude、DeepSeek、OpenAI 等多厂商大模型
+![Preview](preview.png)
 
----
+## 这是什么
 
-## 🚀 快速开始
+[`Ergou Code`](README.md) 基于一份还原后的 [`Claude Code`](README.md) 源码树继续修改而来。
 
-### 安装
+可以把它理解为：
+
+- 基底仍然是“通过 source map 逆向还原 + 缺失模块补齐”得到的可运行代码树
+- 但在此之上，加入了这个 Fork 自己的目标和行为调整
+- 目标不是“100% 忠于上游”，而是“让它更适合折腾、适合代理转接、适合自定义模型接入”
+
+如果用 ACG 比喻，大概属于：
+
+- 原作：[`Claude Code`](README.md)
+- 本作：[`Ergou Code`](README.md)
+- 定位：不是官方 BD 修正集，而是高强度民间魔改但努力保持剧情逻辑自洽的外传 OVA
+
+## 当前定位
+
+这个仓库当前强调的是以下方向：
+
+- 支持自定义 Anthropic 兼容接口地址
+- 正在加入 OpenAI Chat Completions ↔ Anthropic Messages 转接能力
+- 支持自定义 API Key
+- 支持自定义模型与模型列表管理
+- 尽量把自定义接入数据收口到 [`~/.ergou`](README.md) 路径体系
+- 在保留 CLI/TUI 主体结构的前提下，降低对官方登录流的绑定
+
+换句话说，它现在更像一个“可自托管 / 可代理 / 可转接”的 [`Claude Code`](README.md) 变体。
+
+## 与原版 Claude Code 的数据隔离
+
+[`Ergou Code`](README.md) 默认**不应**与原版 [`Claude Code`](README.md) 共用配置和缓存目录。
+
+当前 Fork 已明确把默认用户目录收口到：
+
+- 配置目录：[`~/.ergou`](README.md)
+- 全局配置文件：[`~/.ergou/.claude.json`](README.md)
+
+这样做的目的，是避免以下问题：
+
+- 原版 [`Claude Code`](README.md) 的登录态污染 [`Ergou Code`](README.md)
+- 原版保存的 endpoint / token / model 配置影响 Ergou 的代理转接逻辑
+- 两边共用 [`.claude.json`](README.md) 或 [`.claude/`](README.md) 导致奇怪的网络、认证、模型或 UI 异常
+
+如果用户以前装过原版 [`Claude Code`](README.md)，再运行 [`Ergou Code`](README.md) 时出现“明明没这么配却读到了旧配置”的现象，通常就是历史数据混用导致的。
+
+建议：
+
+- 原版继续使用它自己的 [`.claude`](README.md) / [`.claude.json`](README.md)
+- [`Ergou Code`](README.md) 使用 [`.ergou`](README.md) 目录
+- 如需手动指定，也可以通过 [`CLAUDE_CONFIG_DIR`](README.md) 为 [`Ergou Code`](README.md) 指向独立目录
+
+一句话总结：
+
+> 原版走原版的窝，狗子住狗子的窝，别把缓存、认证和配置炖成一锅。
+
+## OpenAI 兼容接口说明
+
+[`Ergou Code`](README.md) 正在加入一个“中间转接层”模式，用来让内部仍按 Anthropic Messages 结构工作的主逻辑，转发到 OpenAI Chat Completions 接口。
+
+目标行为是：
+
+- 内部程序仍按 Anthropic Messages 模式组织请求
+- 当选择 OpenAI API 格式时，由中间层把 Messages 请求改写成 Chat Completions 请求
+- 远端返回 Chat Completions 流后，再由中间层回转成内部可消费的 Messages 风格流事件
+
+这意味着它不是简单改一个 Base URL，而是协议级别的输入输出流转接。
+
+当前状态：
+
+- API 格式选择界面与配置持久化已加入
+- OpenAI 兼容转接模块正在迭代中
+- 目前仍属于开发中功能，可能出现流式事件不完整、消息映射异常、部分工具调用兼容不足等情况
+
+如果你只是想稳定使用，建议优先走 Anthropic 兼容接口模式；如果你在测试 OpenAI 格式，请把它视为实验功能。
+
+## 和原始还原仓库的关系
+
+这个仓库**不是**上游官方源码仓库，也**不是** pristine 状态的 Claude Code。
+
+它有两层历史：
+
+1. 第一层：还原后的源码树
+2. 第二层：基于该源码树继续进行的 Fork 改造
+
+因此你会看到两类差异同时存在：
+
+- 来自恢复过程的 shim、fallback、兼容层
+- 来自 Ergou Code 的主动魔改
+
+这两类改动都是真实存在的，不建议把当前代码误判成“官方上游源码镜像”。
+
+## 当前状态
+
+- 该源码树已经可以在本地开发流程中恢复并运行
+- [`bun install`](README.md) 可用于安装依赖
+- [`bun run dev`](README.md) 可用于启动恢复后的 CLI/TUI
+- [`bun run version`](README.md) 可用于输出当前版本信息
+- 项目已被继续改造成 [`Ergou Code`](README.md) 分支，部分行为和 UI 已不再与原始 Claude Code 一致
+- 部分区域仍保留恢复期 fallback，因此行为可能与上游实现不同
+- OpenAI API 格式转接功能仍在开发中，当前并非完全稳定
+
+## 为什么会有这个仓库
+
+因为 source map 并不能召唤完整原仓库，最多只能说“把灵魂碎片召回来一部分”。
+
+常见缺口包括：
+
+- 类型专用文件缺失
+- 构建产物和中间文件缺失
+- 私有包包装层无法恢复
+- 原生绑定无法恢复
+- 动态导入资源不完整
+
+因此这个仓库的目标从一开始就不是考古式供奉，而是：
+
+- 先恢复到可运行
+- 再恢复到可维护
+- 最后在能跑的基础上，按需求继续 Fork
+
+简而言之：
+
+> 先让它活，再让它能打，再让它变成狗。
+
+## 运行方式
+
+环境要求：
+
+- Bun 1.3.5 或更高版本
+- Node.js 24 或更高版本
+
+安装依赖：
 
 ```bash
-# 从源码安装
-git clone https://github.com/shmily-xiao/ergou-cli.git
-cd ergou-cli
 bun install
-bun run build
+```
+
+## 快速安装（推荐开发者直接源码使用）
+
+如果你是直接拉这个仓库源码来用，最快的方式是用 [`bun link`](README.md) 把它注册成全局命令。
+
+### 方式一：源码目录内直接注册
+
+在仓库根目录执行：
+
+```bash
+bun install
 bun link
-
-# 使用
-ergou --help
 ```
 
-### 配置 API Key
+注册成功后：
+
+- 全局包名是 [`@ergou-code/cli`](package.json:2)
+- 命令名是 [`ergou`](package.json:24)
+
+此后可直接运行：
 
 ```bash
-# 阿里云 (推荐)
-export DASHSCOPE_API_KEY=your-dashscope-api-key
-
-# Anthropic
-export ANTHROPIC_API_KEY=your-anthropic-api-key
-
-# DeepSeek
-export DEEPSEEK_API_KEY=your-deepseek-api-key
-
-# OpenAI
-export OPENAI_API_KEY=your-openai-api-key
+ergou
 ```
 
-### 开始对话
+### 方式二：在其他项目中引用 link 包
+
+如果你要在别的工程里依赖它，可以使用：
 
 ```bash
-# 交互模式
-ergou chat
-
-# 单条消息
-ergou chat "解释一下这段代码"
-
-# 指定 Provider
-ergou chat -p aliyun -m qwen3.5-plus
-
-# 简写
-ergou c "写一个快速排序"  # c = chat
+bun link @ergou-code/cli
 ```
 
----
+或者在 [`package.json`](package.json) 中写：
 
-## 🔧 命令系统
+```json
+{
+  "dependencies": {
+    "@ergou-code/cli": "link:@ergou-code/cli"
+  }
+}
+```
 
-### 核心命令
+## 使用 Git 直接源码级更新
 
-| 命令 | 别名 | 描述 |
-|------|------|------|
-| `ergou chat [msg...]` | `c` | 开始对话或执行单条消息 |
-| `ergou models` | `m` | 列出可用模型 |
-| `ergou providers` | `p` | 列出可用 Provider |
-| `ergou config` | `cfg` | 配置管理 |
-| `ergou status` | `s` | 显示系统状态 |
-| `ergou version` | `v` | 显示版本号 |
+这个 Fork 很适合直接通过 Git 拉取更新，而不是走传统已发布包升级。
 
-### 使用示例
+典型更新流程：
 
 ```bash
-# 查看帮助
-ergou --help
-
-# 查看状态
-ergou status
-
-# 列出阿里云模型
-ergou models -p aliyun
-
-# 列出 Anthropic 模型
-ergou models -p anthropic
-
-# 查看可用 Provider
-ergou providers
-
-# 开始对话
-ergou chat
-
-# 单条消息执行
-ergou chat "分析这个文件的代码结构" src/main.ts
-
-# 指定模型
-ergou chat -p aliyun -m qwen3.5-plus "写一个二分查找"
-```
-
----
-
-## 📦 支持的模型
-
-### 阿里云 (DashScope) ✅
-
-| 模型 | 上下文 | 价格 (输入/输出) | 描述 |
-|------|--------|----------------|------|
-| `qwen3-coder-plus` | 256K | ¥2.5/¥10 | 代码专用模型 ⭐ |
-| `qwen3.5-plus` | 256K | ¥2.5/¥10 | 通用模型，推荐 |
-| `qwen-plus` | 131K | ¥2/¥6 | 平衡性能 |
-| `qwen-max` | 32K | ¥40/¥120 | 高精度任务 |
-
-### Anthropic Claude 🚧
-
-| 模型 | 上下文 | 价格 (输入/输出) | 描述 |
-|------|--------|----------------|------|
-| `claude-sonnet-4-6` | 200K | $3/$15 | 日常使用推荐 ⭐ |
-| `claude-opus-4-6` | 200K | $15/$75 | 复杂任务 |
-| `claude-haiku-4-5` | 200K | $1/$5 | 快速响应 |
-
-### DeepSeek 🚧
-
-| 模型 | 上下文 | 价格 (输入/输出) | 描述 |
-|------|--------|----------------|------|
-| `deepseek-chat` | 128K | ¥1/¥4 | V3 聊天模型 |
-| `deepseek-coder` | 128K | ¥1/¥4 | 代码专用模型 |
-
-### OpenAI 🚧
-
-| 模型 | 上下文 | 价格 (输入/输出) | 描述 |
-|------|--------|----------------|------|
-| `gpt-4o` | 128K | $5/$15 | 多模态能力 |
-| `gpt-4o-mini` | 128K | $0.15/$0.6 | 高性价比 |
-
-✅ 已实现 | 🚧 开发中
-
----
-
-## 🛠️ 工具系统
-
-Ergou CLI 支持类似 Claude Code 的工具系统：
-
-### 内置工具
-
-| 工具 | 描述 | 状态 |
-|------|------|------|
-| `bash` | 执行 Shell 命令 | ✅ |
-| `file_read` | 读取文件内容 | ✅ |
-| `file_write` | 写入文件内容 | ✅ |
-| `file_edit` | 编辑文件 (diff 模式) | 🚧 |
-| `grep` | 代码搜索 | 🚧 |
-| `glob` | 文件匹配 | 🚧 |
-| `git` | Git 操作 | 🚧 |
-| `mcp` | MCP 工具调用 | 🚧 |
-
-### 使用工具
-
-```bash
-# 启用工具系统
-ergou chat --tools
-
-# 工具会自动被 LLM 调用
-ergou chat --tools "帮我读取 src/main.ts 并分析代码结构"
-```
-
----
-
-## 🏗️ 技术架构
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    CLI Layer                            │
-│  Commander (命令解析)                                   │
-│  Commands: chat/models/providers/config/status         │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│              Provider Abstraction Layer                 │
-│  BaseModelProvider (抽象基类)                           │
-│  ProviderRegistry (注册表)                              │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│              Provider Implementations                   │
-│  AliyunProvider  │ AnthropicProvider │ DeepSeekProvider │
-│  OpenAIProvider  │ More coming soon...                  │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│                  Tool System                            │
-│  BashTool │ FileReadTool │ FileWriteTool │ More...     │
-└─────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📊 项目统计
-
-| 指标 | 数量 |
-|------|------|
-| Provider 实现 | 4 个 |
-| 工具实现 | 3 个 |
-| 类型定义 | 50+ 个 |
-| 代码行数 | ~2000 行 |
-| 依赖包 | 50+ 个 |
-| Git 提交 | 10+ |
-
----
-
-## 🔐 安全
-
-- 命令执行前需要确认 (开发中)
-- 敏感文件访问限制 (开发中)
-- API Key 加密存储 (开发中)
-- 操作审计日志 (开发中)
-
----
-
-## 🤝 贡献
-
-```bash
-# Fork 项目
-git clone https://github.com/shmily-xiao/ergou-cli.git
-
-# 安装依赖
+git pull
 bun install
-
-# 开发模式
-bun run dev
-
-# 构建
-bun run build
-
-# 运行测试
-bun run test
+bun link
 ```
 
----
+含义分别是：
 
-## 📄 许可证
+- [`git pull`](README.md)：拉取最新源码改动
+- [`bun install`](README.md)：同步依赖变化
+- [`bun link`](README.md)：刷新全局 link 注册，确保命令入口与当前源码一致
 
-MIT License
+如果你本地就是长期用源码目录跑 [`Ergou Code`](README.md)，这基本就是“源码级更新”的标准姿势。
 
----
+### 一个推荐工作流
 
-## 🔗 相关链接
+首次安装：
 
-- **项目仓库**: https://github.com/shmily-xiao/ergou-cli
-- **问题反馈**: https://github.com/shmily-xiao/ergou-cli/issues
-- **项目文档**: `/Users/shmily/workspace/ergou-cli/docs/`
-- **基于项目**: [claude-code-sourcemap](https://github.com/anthropics/claude-code-sourcemap)
+```bash
+git clone <your-fork-or-repo-url>
+cd claude-code-rev
+bun install
+bun link
+ergou
+```
 
----
+后续更新：
 
-## 💡 开发计划
+```bash
+git pull
+bun install
+bun link
+ergou
+```
 
-### Phase 1 MVP (当前) ✅
+## 命令与包名
 
-- [x] 项目骨架
-- [x] Provider 系统 (4 个厂商)
-- [x] 工具系统 (基础工具)
-- [x] CLI 命令系统
-- [x] 构建系统
-- [ ] 配置系统 (~/.ergou/config.json)
-- [ ] UI 优化 (Ink TUI)
-- [ ] 单元测试
+运行 [`Ergou Code`](README.md) CLI：
 
-### Phase 2 增强 (Next)
+```bash
+bun run dev
+```
 
-- [ ] 更多工具 (grep/glob/git/mcp)
-- [ ] 文件编辑 (diff 模式)
-- [ ] 代码审查
-- [ ] Git 集成
-- [ ] MCP 支持
+安装为全局命令后，默认命令名为：
 
-### Phase 3 高级 (Future)
+```bash
+ergou
+```
 
-- [ ] 子 Agent 系统
-- [ ] 任务规划
-- [ ] 记忆系统
-- [ ] 知识图谱
-- [ ] npm 发布
+也就是说，这个 Fork 现在的目标入口名是 [`ergou`](README.md)，而不是 [`claude`](README.md)。
 
----
+如果你使用 [`bun link`](README.md) 进行全局注册链接，那么现在注册出来的包名也不再是原版名，而是：
 
-**Made with ❤️ by shmily**
+```bash
+@ergou-code/cli
+```
 
-基于 [Claude Code restored-src](https://github.com/anthropics/claude-code-sourcemap) 重构
+输出版本号：
+
+```bash
+bun run version
+```
+
+## 说明与免责声明
+
+- 本仓库是 [`Claude Code`](README.md) 的 Fork：[`Ergou Code`](README.md)
+- 它包含恢复期代码与后续 Fork 改动，不代表官方立场
+- 如果某些行为看起来“很像官方，但又不完全像”，那通常不是你看错了，而是这确实是恢复版 + 魔改版的叠加态
+- 如果某些文案偶尔带一点 ACG 味，那是彩蛋，不是类型系统坏掉了（至少不全是）
