@@ -311,6 +311,10 @@ export async function getAnthropicClient({
     isEnvTruthy(process.env.USE_STAGING_OAUTH)
       ? { baseURL: getOauthConfig().BASE_API_URL }
       : {}),
+    // Set baseURL from environment variable for custom API endpoints (e.g., DashScope, LiteLLM)
+    ...(process.env.ANTHROPIC_BASE_URL
+      ? { baseURL: process.env.ANTHROPIC_BASE_URL }
+      : {}),
     ...ARGS,
     ...(isDebugToStdErr() && { logger: createStderrLogger() }),
   }

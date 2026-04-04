@@ -13,7 +13,8 @@ type Platform = 'win32' | 'darwin' | 'linux'
 
 // Config and data paths
 export const getGlobalClaudeFile = memoize((): string => {
-  // Legacy fallback for backwards compatibility
+  // Legacy: if ~/.ergou/.config.json exists it wins over .claude.json in the same
+  // directory — edits to .claude.json alone will not apply until .config.json is removed or merged.
   if (
     getFsImplementation().existsSync(
       join(getClaudeConfigHomeDir(), '.config.json'),
